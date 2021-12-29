@@ -1,15 +1,15 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import AuthService from '../services/AuthService';
 import { IUser } from '../models/IUser';
-import { JsxElement } from 'typescript';
-import axios from 'axios';
+import { notification } from 'antd';
+// import axios from 'axios';
 
 interface AuthContextData {
   isAuth: boolean;
   user: IUser | null;
   isLoading: boolean;
-  login(email: string, password: string): Promise<void>;
-  // signOut(): Promise<void>;
+  login(email: string, password: string): Promise<boolean>;
+  logout(): Promise<void>;
   registration(
     email: string,
     password: string,
@@ -23,28 +23,31 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<IUser | null>(null);
+  const [isAuth, setIsAuth] = useState(false);
 
-  // useEffect(() => {
-  //   function loadStorageData() {
-  //     const storageUser = localStorage.getItem('user');
-  //     const storageToken = localStorage.getItem('token');
+  useEffect(() => {
+    function loadStorageData() {
+      const storageUser = localStorage.getItem('user');
+      const storageToken = localStorage.getItem('token');
 
-  //     if (storageToken && storageUser) {
-  //       setUser(JSON.parse(storageUser));
-  //       setLoading(false);
-  //     }
-  //   }
-  //   loadStorageData();
-  // }, []);
+      if (storageToken && storageUser) {
+        setUser(JSON.parse(storageUser));
+        setLoading(false);
+      }
+    }
+    loadStorageData();
+  }, []);
 
   async function login(email: string, password: string) {
     try {
       const response = await AuthService.login(email, password);
-      console.log('reee', response);
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
       setUser(response.data.user);
+      setIsAuth(true);
+      return true;
     } catch (error) {
-      console.log(error);
+      return false;
     }
   }
 
@@ -62,24 +65,45 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         last_name
       );
       localStorage.setItem('token', response.data.token);
-      setUser(response.data.user);
-      setUser(response.data.user);
       localStorage.setItem('user', JSON.stringify(response.data.user));
-    } catch (error) {}
+      setUser(response.data.user);
+      setIsAuth(true);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  async function checkAuth() {
-    setLoading(true);
+  // async function checkAuth() {
+  //   setLoading(true);
+  //   try {
+  //     // const response = await axios;
+  //   } catch (error) {
+  //   } finally {
+  //   }
+  // }
+
+  async function logout() {
     try {
-      // const response = await axios;
+      await AuthService.logout();
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      setUser(null);
+      setIsAuth(false);
     } catch (error) {
-    } finally {
+      console.log(error);
     }
   }
 
   return (
     <AuthContext.Provider
-      value={{ isAuth: !!user, user, login, registration, isLoading: loading }}
+      value={{
+        isAuth,
+        user,
+        login,
+        registration,
+        isLoading: loading,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -1,6 +1,12 @@
 import axios from 'axios';
+import { notification } from 'antd';
+
 import { AuthResponse } from '../models/response/AuthResponse';
 
+interface errorType {
+  key: string;
+  value: string;
+}
 export const API_URL = `http://localhost:4000/api/v1`;
 
 const api = axios.create({
@@ -25,7 +31,7 @@ api.interceptors.response.use(
     return config;
   },
   async (error) => {
-    console.dir(error.config);
+    console.log(error.response);
     const originalRequest = error.config;
     if (
       error.response.status === 401 &&
@@ -43,7 +49,25 @@ api.interceptors.response.use(
         console.log('Not authorizing');
       }
     }
-    throw error;
+    if (error.response.status === 400) {
+      if (error.response.data.errors.length > 0) {
+        error.response.data.errors.map((error: errorType) =>
+          Object.entries(error).forEach(([key, value]) => {
+            return notification.error({
+              message: value,
+              placement: 'bottomRight',
+            });
+          })
+        );
+      } else {
+        notification.error({
+          message: error.response.data.message,
+          placement: 'bottomRight',
+        });
+      }
+    }
+
+    return Promise.reject(error);
   }
 );
 

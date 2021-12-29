@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AppRoutes } from '../../constants/constants';
+import { AppRouters } from '../../constants/constants';
 import { Login } from './Login';
 import AuthContext from '../../context/auth';
 
@@ -10,13 +10,8 @@ const LoginContainer = () => {
   const { login } = useContext(AuthContext);
 
   const handleLogin = async (email: string, password: string) => {
-    try {
-      const aa = await login(email, password);
-      console.log('aaa', aa);
-      // navigate(AppRoutes.DASHBOARD);
-    } catch (e) {
-      console.log(e);
-    }
+    const res = await login(email, password);
+    res && navigate(AppRouters.HOME);
   };
   return <Login handleLogin={handleLogin} />;
 };

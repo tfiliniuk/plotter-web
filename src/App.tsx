@@ -1,30 +1,18 @@
-import React, { lazy, Suspense } from 'react';
+import React, { Suspense } from 'react';
 
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes as Switch,
-} from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { Loader } from './components/Loader';
-import { AppRoutes } from './constants/constants';
+import { Navbar } from './components/Navbar/Navbar';
 import { AuthProvider } from './context/auth';
-
-const Login = lazy(() => import('./pages/login/Login.container'));
-const SignUp = lazy(
-  () => import('./pages/registration/Registration.container')
-);
-const NotFound = lazy(() => import('./pages/notFound/NotFoundPage'));
+import { Routes } from './routes';
 
 export const App = () => {
   return (
     <Router>
       <AuthProvider>
+        <Navbar />
         <Suspense fallback={<Loader />}>
-          <Switch>
-            <Route path={AppRoutes.LOGIN} element={<Login />} />
-            <Route path={AppRoutes.SIGN_UP} element={<SignUp />} />
-            <Route path="*" element={<NotFound />} />
-          </Switch>
+          <Routes />
         </Suspense>
       </AuthProvider>
     </Router>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Input, Button } from 'antd';
 import { Link } from 'react-router-dom';
-import { AppRoutes } from '../../constants/constants';
+import { AppRouters } from '../../constants/constants';
 
 interface LoginProps {
   handleLogin: (email: string, password: string) => void;
@@ -56,7 +56,7 @@ export const Login = ({ handleLogin }: LoginProps) => {
           </Button>
         </Form.Item>
       </Form>
-      <Link to={AppRoutes.SIGN_UP}>Not yet account?</Link>
+      <Link to={AppRouters.SIGN_UP}>Not yet account?</Link>
     </>
   );
 };
