@@ -1,8 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import AuthService from '../services/AuthService';
 import { IUser } from '../models/IUser';
-import { notification } from 'antd';
-// import axios from 'axios';
 
 interface AuthContextData {
   isAuth: boolean;
@@ -10,6 +8,7 @@ interface AuthContextData {
   isLoading: boolean;
   login(email: string, password: string): Promise<boolean>;
   logout(): Promise<void>;
+  reset(email: string): Promise<void>;
   registration(
     email: string,
     password: string,
@@ -73,14 +72,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  // async function checkAuth() {
-  //   setLoading(true);
-  //   try {
-  //     // const response = await axios;
-  //   } catch (error) {
-  //   } finally {
-  //   }
-  // }
+  async function reset(email: string) {
+    try {
+      await AuthService.reset(email);
+      return true;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   async function logout() {
     try {
@@ -103,6 +102,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         registration,
         isLoading: loading,
         logout,
+        reset,
       }}
     >
       {children}

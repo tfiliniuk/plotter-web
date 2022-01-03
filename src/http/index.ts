@@ -31,7 +31,6 @@ api.interceptors.response.use(
     return config;
   },
   async (error) => {
-    console.log(error.response);
     const originalRequest = error.config;
     if (
       error.response.status === 401 &&
@@ -49,7 +48,11 @@ api.interceptors.response.use(
         console.log('Not authorizing');
       }
     }
-    if (error.response.status === 400) {
+    if (
+      error.response.status === 400 ||
+      error.response.status === 404 ||
+      error.response.status === 409
+    ) {
       if (error.response.data.errors.length > 0) {
         error.response.data.errors.map((error: errorType) =>
           Object.entries(error).forEach(([key, value]) => {

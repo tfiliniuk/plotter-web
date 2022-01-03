@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Registration } from './Registration';
 import AuthContext from '../../context/auth';
+import { AppRouters } from '../../constants/constants';
 
 const RegistrationContainer = () => {
   const navigate = useNavigate();
@@ -14,9 +15,8 @@ const RegistrationContainer = () => {
     firstName: string
   ) => {
     try {
-      const aa = await registration(email, password, lastName, firstName);
-      console.log('aaa', aa);
-      // navigate(AppRoutes.DASHBOARD);
+      await registration(email, password, lastName, firstName);
+      navigate(AppRouters.HOME);
     } catch (e) {
       console.log(e);
     }

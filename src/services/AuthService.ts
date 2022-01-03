@@ -24,6 +24,12 @@ export default class AuthServices {
     });
   }
 
+  static async reset(email: string): Promise<AxiosResponse<AuthResponse>> {
+    return api.post<AuthResponse>('/auth/reset', {
+      email,
+    });
+  }
+
   static async logout(): Promise<void> {
     return api.get('/logout');
   }
